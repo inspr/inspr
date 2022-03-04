@@ -23,8 +23,6 @@ import (
 var clientSet kubernetes.Interface
 var logger *zap.Logger
 
-const bitSize = 512 // min size for encoding your payload
-
 func generatePassword() string {
 	chars := []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ" +
 		"abcdefghijklmnopqrstuvwxyz" +
@@ -57,7 +55,7 @@ func initKube() error {
 
 func generatePrivateKey() (*rsa.PrivateKey, error) {
 	// Private Key generation
-	privateKey, err := rsa.GenerateKey(rand.Reader, bitSize)
+	privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return nil, err
 	}

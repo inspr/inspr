@@ -2,6 +2,7 @@ package nodes
 
 import (
 	"fmt"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -25,7 +26,13 @@ func (no *NodeOperator) dappToService(app *meta.App) *kubeService {
 	logger.Info("creating kubernetes service")
 
 	temp, _ := strconv.Atoi(os.Getenv("INSPR_LBSIDECAR_READ_PORT"))
-	lbsidecarPort = int32(temp)
+	if temp > 0 && temp < math.MaxUint16 {
+		lbsidecarPort = int32(temp)
+	} else {
+		// ref http://www.faqs.org/rfcs/rfc793.html
+		panic("invalid port number. the highest valid TCP / UDP port number is 65535 and the lowest is 1")
+	}
+
 	appID := toAppID(app)
 	appDeployName := toDeploymentName(app)
 	appLabels := map[string]string{"inspr-app": appID}
